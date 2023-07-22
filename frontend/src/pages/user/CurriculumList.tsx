@@ -1,7 +1,8 @@
 import CurriculumListRow from './CurriculumListRow'
+import DeletePlanModal from './DeletePlanModal'
 import { ReactComponent as PlusIcon } from '../../assets/plus.svg'
 import { Link } from '@tanstack/react-router'
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { DefaultService, type LowDetailPlanView, type ApiError } from '../../client'
 import { Spinner } from '../../components/Spinner'
 import { toast } from 'react-toastify'
@@ -11,8 +12,19 @@ const isApiError = (err: any): err is ApiError => {
 }
 
 const CurriculumList = (): JSX.Element => {
-  const [plans, setPlans] = useState <LowDetailPlanView[]>([])
-  const [loading, setLoading] = useState <boolean>(true)
+  const [plans, setPlans] = useState<LowDetailPlanView[]>([])
+  const [loading, setLoading] = useState<boolean>(true)
+  const [planToDelete, setPlanToDelete] = useState<LowDetailPlanView | null>(null)
+  const [isDeletePlanModalOpen, setIsDeletePlanModalOpen] = useState<boolean>(false)
+
+  const openDeletePlanModal = useCallback((selectedPlan: LowDetailPlanView | null): void => {
+    setPlanToDelete(selectedPlan)
+    setIsDeletePlanModalOpen(true)
+  }, [setIsDeletePlanModalOpen])
+
+  const closeDeletePlanModal = useCallback((): void => {
+    setIsDeletePlanModalOpen(false)
+  }, [setIsDeletePlanModalOpen])
 
   const readPlans = async (): Promise<void> => {
     const response = await DefaultService.readPlans()
@@ -31,7 +43,10 @@ const CurriculumList = (): JSX.Element => {
       }
     })
   }, [])
-  async function handleDelete (id: string): Promise<void> {
+
+  const handleDelete = async (): Promise<void> => {
+    let id: string = ''
+    if (planToDelete !== null) { id = planToDelete.id }
     try {
       console.log('click', id)
       await DefaultService.deletePlan(id)
@@ -49,6 +64,7 @@ const CurriculumList = (): JSX.Element => {
 
   return (
       <div className="flex mb-4 h-full w-full">
+        <DeletePlanModal selectedPlanName={planToDelete?.name} isOpen={isDeletePlanModalOpen} onClose={closeDeletePlanModal} deletePlan={handleDelete} />
           <div className="m-3 w-full">
                 <div className="flex gap-4 items-center">
                     <h2 className="text-3xl font-medium leading-normal mb-2 text-gray-800 text-center">Mis mallas</h2>
@@ -79,7 +95,7 @@ const CurriculumList = (): JSX.Element => {
                   <tbody className='bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600'>
                     {plans?.map((plan: LowDetailPlanView) => {
                       return (
-                              <CurriculumListRow key={plan.id} handleDelete={handleDelete} curriculum={plan}/>
+                              <CurriculumListRow key={plan.id} openDeletePlanModal={() => { openDeletePlanModal(planToDelete) }} curriculum={plan}/>
                       )
                     })}
                   </tbody>

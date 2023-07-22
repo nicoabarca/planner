@@ -1,10 +1,14 @@
 import { type LowDetailPlanView } from '../../client'
 import { Link } from '@tanstack/react-router'
 
-const CurriculumListRow = ({ handleDelete, curriculum }: { handleDelete: Function, curriculum: LowDetailPlanView }): JSX.Element => {
+interface CurriculumListRowProps {
+  openDeletePlanModal: Function
+  curriculum: LowDetailPlanView
+}
+
+const CurriculumListRow = ({ openDeletePlanModal, curriculum }: CurriculumListRowProps): JSX.Element => {
   function getDateString (date: string): string {
-    const mydate = date.split('T')[0].split('-').reverse().join('-')
-    return mydate
+    return date.split('T')[0].split('-').reverse().join('-')
   }
 
   return (
@@ -30,7 +34,7 @@ const CurriculumListRow = ({ handleDelete, curriculum }: { handleDelete: Functio
                   }}
                 >Editar
               </Link>
-              <button className='text-red-600' onClick={() => handleDelete(curriculum.id)}>Eliminar</button>
+              <button className='text-red-600' onClick={() => { openDeletePlanModal() }}>Eliminar</button>
             </div></td>
         </tr>
   )
