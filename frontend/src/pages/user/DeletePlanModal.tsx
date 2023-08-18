@@ -1,23 +1,16 @@
 
-import { memo, useState, useEffect, Fragment } from 'react'
+import { memo, Fragment } from 'react'
 import { Dialog, Transition } from '@headlessui/react'
 
 interface DeletePlanModalProps {
+  key: string
   selectedPlanName: string | undefined
   isOpen: boolean
   onClose: Function
   deletePlan: Function
 }
 
-const DeletePlanModal = ({ selectedPlanName, isOpen, onClose, deletePlan }: DeletePlanModalProps): JSX.Element => {
-  const [planName, setPlanName] = useState<string | undefined>('')
-
-  useEffect(() => {
-    if (planName !== selectedPlanName) {
-      setPlanName(selectedPlanName)
-    }
-  }, [selectedPlanName])
-
+const DeletePlanModal = ({ key, selectedPlanName, isOpen, onClose, deletePlan }: DeletePlanModalProps): JSX.Element => {
   return (
     <Transition.Root show={isOpen} as={Fragment}>
       <Dialog as="div" className="modal relative" onClose={() => { onClose() } }>
@@ -48,9 +41,11 @@ const DeletePlanModal = ({ selectedPlanName, isOpen, onClose, deletePlan }: Dele
                 <div className="bg-white pb-4 pt-5 sm:p-6 sm:pb-4">
                   <div className="justify-center sm:flex sm:items-start p-3">
                     <div className="mt-3 text-center sm:ml-4 sm:mt-0 ">
-                      <Dialog.Title as="h3" className="text-lg font-normal leading-6 text-gray-900">
-                        Vas a eliminar la malla <span className='font-semibold'>{selectedPlanName}</span>
+                      <Dialog.Title as="h3" className="text-lg font-semibold leading-6 text-gray-900">
+                        ¿Estás seguro/a?
                       </Dialog.Title>
+                      <p>Vas a eliminar la malla <span className='font-semibold underline'>{selectedPlanName}</span>. </p>
+                      <p>Esta acción no se puede deshacer.</p>
                     </div>
                   </div>
                 </div>
@@ -63,8 +58,9 @@ const DeletePlanModal = ({ selectedPlanName, isOpen, onClose, deletePlan }: Dele
                       onClose()
                     }}
                   >
-                    Sí, eliminar
+                    Eliminar
                   </button>
+
                 </div>
               </Dialog.Panel>
             </Transition.Child>

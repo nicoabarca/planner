@@ -37,7 +37,7 @@ const CurriculumList = (): JSX.Element => {
       console.log(err)
       if (err.status === 401) {
         console.log('token invalid or expired, loading re-login page')
-        toast.error('Tu session a expirado. Redireccionando a pagina de inicio de sesion...', {
+        toast.error('Tu session ha expirado. Redireccionando a pagina de inicio de sesion...', {
           toastId: 'ERROR401'
         })
       }
@@ -45,7 +45,7 @@ const CurriculumList = (): JSX.Element => {
   }, [])
 
   const handleDelete = async (): Promise<void> => {
-    let id: string = ''
+    let id: string
     if (planToDelete !== null) { id = planToDelete.id }
     try {
       console.log('click', id)
@@ -62,9 +62,11 @@ const CurriculumList = (): JSX.Element => {
     }
   }
 
+  const deleteModals = plans.map(plan => (<DeletePlanModal key={plan.id}selectedPlanName={plan.name} isOpen={isDeletePlanModalOpen} onClose={closeDeletePlanModal} deletePlan={handleDelete}/>))
+
   return (
       <div className="flex mb-4 h-full w-full">
-        <DeletePlanModal selectedPlanName={planToDelete?.name} isOpen={isDeletePlanModalOpen} onClose={closeDeletePlanModal} deletePlan={handleDelete} />
+          {deleteModals}
           <div className="m-3 w-full">
                 <div className="flex gap-4 items-center">
                     <h2 className="text-3xl font-medium leading-normal mb-2 text-gray-800 text-center">Mis mallas</h2>
